@@ -3,7 +3,7 @@
   remote_user: thenerdshow
   vars:
     dir: "/home/{{ ansible_user }}/castopod"
-    port: "8000"
+    app_port: "8000"
   roles:
     - git_pull
     - docker_restart

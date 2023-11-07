@@ -57,9 +57,9 @@
       - name: castopod-db
       - name: castopod-app
     exposed_ports:
-      - "{{ port }}"
+      - "{{ app_port }}"
     published_ports:
-      - "{{ port }}:{{ port }}"
+      - "{{ app_port }}:{{ app_port }}"
     restart: yes
     recreate: yes
     restart_policy: always
