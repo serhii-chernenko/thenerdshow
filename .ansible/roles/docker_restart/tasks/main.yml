@@ -22,7 +22,7 @@
       CP_REDIS_HOST: castopod-redis
       CP_REDIS_PASSWORD: "{{ CP_REDIS_PASSWORD }}"
     volumes:
-      - "{{ dir }}/castopod-media:/var/www/castopod/public/media"
+      - "{{ dir }}/castopod-media:{{ container_dir }}/public/media"
     networks:
       - name: castopod-db
       - name: castopod-app
@@ -32,6 +32,10 @@
       - "{{ app_port }}:{{ app_port }}"
     restart: yes
     recreate: yes
+  register: container_output
+
+- name: Fix permissions inside the APP container
+  command: docker exec {{ container_output.container.Id }} /bin/bash -c "chmod 755 {{ container_dir }} && chown -R www-data:www-data {{ container_dir }}"
 
 - name: Run MariaDB container
   docker_container:

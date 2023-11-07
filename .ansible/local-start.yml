@@ -3,6 +3,7 @@
   remote_user: inevix
   vars:
     dir: "/home/{{ ansible_user }}/dev/main/castopod"
+    container_dir: "/var/www/castopod"
     app_port: "8000"
   roles:
     - docker_restart
