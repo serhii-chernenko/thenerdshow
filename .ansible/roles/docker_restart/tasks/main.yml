@@ -1,7 +1,7 @@
 - name: Create networks
   docker_network:
     name: "{{ item }}"
-    state: absent
+    state: present
     force: true
   loop:
     - castopod-db
