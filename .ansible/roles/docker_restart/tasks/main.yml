@@ -21,7 +21,7 @@
       CP_REDIS_HOST: castopod-redis
       CP_REDIS_PASSWORD: "{{ CP_REDIS_PASSWORD }}"
     volumes:
-      - castopod-media:/var/www/castopod/public/media
+      - "{{ dir }}/castopod-media:/var/www/castopod/public/media"
     networks:
       - name: castopod-db
       - name: castopod-app
@@ -42,7 +42,7 @@
       MYSQL_USER: "{{ MYSQL_USER }}"
       MYSQL_PASSWORD: "{{ MYSQL_PASSWORD }}"
     volumes:
-      - castopod-db:/var/lib/mysql
+      - "{{ dir }}/castopod-db:/var/lib/mysql"
     networks:
       - name: castopod-db
     restart: yes
@@ -54,7 +54,7 @@
     image: redis:7.0-alpine
     command: "--requirepass {{ CP_REDIS_PASSWORD }}"
     volumes:
-      - castopod-cache:/data
+      - "{{ dir }}/castopod-cache:/data"
     networks:
       - name: castopod-app
     restart: yes

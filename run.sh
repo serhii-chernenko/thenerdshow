@@ -9,5 +9,4 @@ ansible-playbook .ansible/local-start.yml \
   -e MYSQL_ROOT_PASSWORD="${NAME}" \
   -e CP_ANALYTICS_SALT="${NAME}" \
   -e CP_REDIS_PASSWORD="${NAME}" \
-  -e CP_BASEURL="https://${NAME}.test" \
-  --verbose
+  -e CP_BASEURL="https://${NAME}.test"
