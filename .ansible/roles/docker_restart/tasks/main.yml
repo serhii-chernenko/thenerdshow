@@ -6,19 +6,31 @@
     - castopod-db
     - castopod-app
 
-- name: Run Redis container
+- name: Run App container
   docker_container:
-    name: castopod-redis
-    image: redis:7.0-alpine
-    command: "--requirepass {{ CP_REDIS_PASSWORD }}"
+    name: castopod-app
+    image: castopod/castopod:latest
+    env:
+      CP_DATABASE_HOSTNAME: castopod-mariadb
+      MYSQL_DATABASE: "{{ MYSQL_DATABASE }}"
+      MYSQL_USER: "{{ MYSQL_USER }}"
+      MYSQL_PASSWORD: "{{ MYSQL_PASSWORD }}"
+      CP_BASEURL: "{{ CP_BASEURL }}"
+      CP_ANALYTICS_SALT: "{{ CP_ANALYTICS_SALT }}"
+      CP_CACHE_HANDLER: redis
+      CP_REDIS_HOST: castopod-redis
+      CP_REDIS_PASSWORD: "{{ CP_REDIS_PASSWORD }}"
     volumes:
-      - castopod-cache:/data
+      - castopod-media:/var/www/castopod/public/media
     networks:
+      - name: castopod-db
       - name: castopod-app
+    exposed_ports:
+      - "{{ app_port }}"
+    published_ports:
+      - "{{ app_port }}:{{ app_port }}"
     restart: yes
     recreate: yes
-    restart_policy: always
-    state: present
 
 - name: Run MariaDB container
   docker_container:
@@ -35,33 +47,16 @@
       - name: castopod-db
     restart: yes
     recreate: yes
-    restart_policy: always
-    state: present
 
-- name: Run App container
+- name: Run Redis container
   docker_container:
-    name: castopod-app
-    image: castopod/castopod:latest
-    env:
-      MYSQL_DATABASE: "{{ MYSQL_DATABASE }}"
-      MYSQL_USER: "{{ MYSQL_USER }}"
-      MYSQL_PASSWORD: "{{ MYSQL_PASSWORD }}"
-      CP_BASEURL: "{{ CP_BASEURL }}"
-      CP_ANALYTICS_SALT: "{{ CP_ANALYTICS_SALT }}"
-      CP_CACHE_HANDLER: redis
-      CP_REDIS_HOST: redis
-      CP_REDIS_PASSWORD: "{{ CP_REDIS_PASSWORD }}"
+    name: castopod-redis
+    image: redis:7.0-alpine
+    command: "--requirepass {{ CP_REDIS_PASSWORD }}"
     volumes:
-      - castopod-media:/var/www/castopod/public/media
+      - castopod-cache:/data
     networks:
-      - name: castopod-db
       - name: castopod-app
-    exposed_ports:
-      - "{{ app_port }}"
-    published_ports:
-      - "{{ app_port }}:{{ app_port }}"
     restart: yes
     recreate: yes
-    restart_policy: always
-    state: present
 

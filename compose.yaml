@@ -5,7 +5,7 @@ services:
     image: castopod/castopod:latest
     container_name: "castopod-app"
     volumes:
-      - castopod-media:/var/www/castopod/public/media
+      - ./castopod-media:/var/www/castopod/public/media
     environment:
       MYSQL_DATABASE: castopod
       MYSQL_USER: castopod
@@ -28,7 +28,7 @@ services:
     networks:
       - castopod-db
     volumes:
-      - castopod-db:/var/lib/mysql
+      - ./castopod-db:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: changeme
       MYSQL_DATABASE: castopod
@@ -40,15 +40,10 @@ services:
     image: redis:7.0-alpine
     container_name: "castopod-redis"
     volumes:
-      - castopod-cache:/data
+      - ./castopod-cache:/data
     networks:
       - castopod-app
     command: --requirepass changeme-redis-pass
-
-volumes:
-  castopod-media:
-  castopod-db:
-  castopod-cache:
 
 networks:
   castopod-app:

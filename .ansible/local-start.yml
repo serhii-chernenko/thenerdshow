@@ -1,0 +1,7 @@
+- name: Deploy Castopod locally
+  hosts: localhost
+  remote_user: inevix
+  vars:
+    app_port: "8000"
+  roles:
+    - docker_restart

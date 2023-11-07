@@ -1,0 +1,5 @@
+- name: Cleanup Castopod locally
+  hosts: localhost
+  remote_user: inevix
+  roles:
+    - docker_stop
