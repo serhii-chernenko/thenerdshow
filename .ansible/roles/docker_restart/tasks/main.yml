@@ -2,6 +2,7 @@
   docker_network:
     name: "{{ item }}"
     state: present
+    force: true
   loop:
     - castopod-db
     - castopod-app
