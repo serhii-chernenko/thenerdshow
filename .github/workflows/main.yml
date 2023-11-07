@@ -1,0 +1,34 @@
+name: Deploy Castopod on VPS
+
+on:
+  push:
+    branches: [ 'main' ]
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run a build command
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: .ansible/main.yml
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          inventory: |
+            [all]
+            ${{ secrets.VPS }} address=localhost
+          options: |
+            -e GITHUB_REPO=${{ github.repository }}
+            -e ansible_port=${{ secrets.SSH_PORT }}
+            -e MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+            -e MYSQL_USER=${{ secrets.MYSQL_USER }}
+            -e MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+            -e CP_ANALYTICS_SALT=${{ secrets.CP_ANALYTICS_SALT }}
+            -e CP_REDIS_PASSWORD=${{ secrets.CP_REDIS_PASSWORD }}
+            -e CP_BASEURL=${{ vars.CP_BASEURL }}

@@ -1,0 +1,7 @@
+- name: Update the repo on VPS
+  git:
+    repo: "git@github.com:{{ GITHUB_REPO }}.git"
+    dest: "{{ dir }}"
+    single_branch: true
+    version: main
+    accept_newhostkey: true

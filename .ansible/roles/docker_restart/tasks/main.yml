@@ -1,0 +1,67 @@
+- name: Create networks
+  docker_network:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - castopod-db
+    - castopod-app
+
+- name: Run Redis container
+  docker_container:
+    name: castopod-redis
+    image: redis:7.0-alpine
+    command: "--requirepass {{ CP_REDIS_PASSWORD }}"
+    volumes:
+      - castopod-cache:/data
+    networks:
+      - name: castopod-app
+    restart: yes
+    recreate: yes
+    restart_policy: always
+    state: present
+
+- name: Run MariaDB container
+  docker_container:
+    name: castopod-mariadb
+    image: mariadb:10.5
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ MYSQL_ROOT_PASSWORD }}"
+      MYSQL_DATABASE: "{{ MYSQL_DATABASE }}"
+      MYSQL_USER: "{{ MYSQL_USER }}"
+      MYSQL_PASSWORD: "{{ MYSQL_PASSWORD }}"
+    volumes:
+      - castopod-db:/var/lib/mysql
+    networks:
+      - name: castopod-db
+    restart: yes
+    recreate: yes
+    restart_policy: always
+    state: present
+
+- name: Run App container
+  docker_container:
+    name: castopod-app
+    image: castopod/castopod:latest
+    env:
+      MYSQL_DATABASE: "{{ MYSQL_DATABASE }}"
+      MYSQL_USER: "{{ MYSQL_USER }}"
+      MYSQL_PASSWORD: "{{ MYSQL_PASSWORD }}"
+      CP_BASEURL: "{{ CP_BASEURL }}"
+      CP_ANALYTICS_SALT: "{{ CP_ANALYTICS_SALT }}"
+      CP_CACHE_HANDLER: redis
+      CP_REDIS_HOST: redis
+      CP_REDIS_PASSWORD: "{{ CP_REDIS_PASSWORD }}"
+    volumes:
+      - castopod-media:/var/www/castopod/public/media
+    networks:
+      - name: castopod-db
+      - name: castopod-app
+    exposed_ports:
+      - "{{ port }}"
+    published_ports:
+      - "{{ port }}:{{ port }}"
+    restart: yes
+    recreate: yes
+    restart_policy: always
+    state: present
+
